@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <h1>📚 স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম</h1>
+                    <p>আপনার দৈনন্দিন শিক্ষা কার্যক্রম পরিচালনা করুন</p>
+                </div>
+                <div class="date-time" id="currentDateTime">
+                    <div class="date"></div>
+                    <div class="time"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav>
+            <ul>
+                <li><a href="#" class="active" onclick="showSection('dashboard')">ড্যাশবোর্ড</a></li>
+                <li><a href="#" onclick="showSection('routine')">ডেইলি রুটিন</a></li>
+                <li><a href="#" onclick="showSection('students')">স্টুডেন্ট প্রোফাইল</a></li>
+                <li><a href="#" onclick="showSection('attendance')">অ্যাটেনডেন্স</a></li>
+            </ul>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalStudents">০</div>
+                    <div class="stat-label">মোট স্টুডেন্ট</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayPresent">০</div>
+                    <div class="stat-label">আজ উপস্থিত</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayAbsent">০</div>
+                    <div class="stat-label">আজ অনুপস্থিত</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="attendanceRate">০%</div>
+                    <div class="stat-label">উপস্থিতির হার</div>
+                </div>
+            </div>
+
+            <!-- Today's Routine Preview -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>আজকের রুটিন</h2>
+                </div>
+                <div class="routine-list" id="todayRoutine">
+                    <!-- Dynamic routine will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Routine Section -->
+        <div id="routine" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2>ডেইলি রুটিন ম্যানেজমেন্ট</h2>
+                </div>
+                
+                <!-- Add Routine Form -->
+                <div class="form-group">
+                    <input type="time" id="routineTime" class="form-input" placeholder="সময়">
+                    <input type="text" id="routineActivity" class="form-input" placeholder="কাজের বিবরণ">
+                    <select id="routineDay" class="form-input">
+                        <option value="sunday">রবিবার</option>
+                        <option value="monday">সোমবার</option>
+                        <option value="tuesday">মঙ্গলবার</option>
+                        <option value="wednesday">বুধবার</option>
+                        <option value="thursday">বৃহস্পতিবার</option>
+                        <option value="friday">শুক্রবার</option>
+                        <option value="saturday">শনিবার</option>
+                    </select>
+                    <button onclick="addRoutine()" class="btn">রুটিন যোগ করুন</button>
+                </div>
+
+                <!-- Routine List -->
+                <div class="routine-full-list" id="routineList">
+                    <!-- Dynamic routine list will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Profile Section -->
+        <div id="students" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2>স্টুডেন্ট প্রোফাইল ম্যানেজমেন্ট</h2>
+                </div>
+
+                <!-- Add Student Form -->
+                <div class="form-group">
+                    <input type="text" id="studentName" class="form-input" placeholder="নাম">
+                    <input type="text" id="studentRoll" class="form-input" placeholder="রোল নম্বর">
+                    <input type="text" id="studentClass" class="form-input" placeholder="ক্লাস">
+                    <input type="text" id="studentPhone" class="form-input" placeholder="ফোন নম্বর">
+                    <button onclick="addStudent()" class="btn">স্টুডেন্ট যোগ করুন</button>
+                </div>
+
+                <!-- Student List -->
+                <div class="student-list" id="studentList">
+                    <!-- Dynamic student list will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Section -->
+        <div id="attendance" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2>অ্যাটেনডেন্স ম্যানেজমেন্ট</h2>
+                </div>
+
+                <!-- Date Selector -->
+                <div class="form-group">
+                    <input type="date" id="attendanceDate" class="form-input">
+                    <button onclick="loadAttendance()" class="btn">লোড করুন</button>
+                </div>
+
+                <!-- Attendance List -->
+                <div class="attendance-list" id="attendanceList">
+                    <!-- Dynamic attendance list will appear here -->
+                </div>
+
+                <button onclick="saveAttendance()" class="btn" style="margin-top: 20px;">অ্যাটেনডেন্স সেভ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
