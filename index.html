@@ -48,16 +48,39 @@
                     <span class="stat-label">মোট স্টুডেন্ট</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" id="totalClasses">6</span>
+                    <span class="stat-number" id="totalClasses">0</span>
                     <span class="stat-label">মোট বিষয়</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Classes Section -->
+    <!-- Classes Section with Upload Option -->
     <section id="classes" class="classes">
         <h2 class="section-title">আমাদের ক্লাসসমূহ</h2>
+        
+        <!-- Class Upload Form (Private) -->
+        <div class="class-upload-container" id="classUpload" style="display: none;">
+            <h3>নতুন ক্লাস আপলোড করুন</h3>
+            <div class="upload-form">
+                <input type="text" id="className" placeholder="বিষয়ের নাম (যেমন: বাংলা ১ম পত্র)">
+                <input type="text" id="classTeacher" placeholder="শিক্ষকের নাম">
+                <input type="number" id="classStudents" placeholder="মোট স্টুডেন্ট সংখ্যা">
+                <select id="classIcon">
+                    <option value="fa-book">বাংলা</option>
+                    <option value="fa-language">ইংরেজি</option>
+                    <option value="fa-calculator">গণিত</option>
+                    <option value="fa-flask">বিজ্ঞান</option>
+                    <option value="fa-atom">পদার্থ</option>
+                    <option value="fa-vial">রসায়ন</option>
+                    <option value="fa-dna">জীববিজ্ঞান</option>
+                    <option value="fa-laptop">আইসিটি</option>
+                </select>
+                <button onclick="uploadClass()" class="btn-primary">আপলোড করুন</button>
+            </div>
+        </div>
+
+        <!-- Class Grid -->
         <div class="class-grid" id="classGrid">
             <!-- Subjects will be loaded here -->
         </div>
@@ -88,13 +111,26 @@
                     <option value="2026">২০২৬</option>
                 </select>
             </div>
-            <div class="calendar" id="attendanceCalendar">
-                <!-- Calendar will be loaded here -->
+            
+            <!-- Fixed Calendar Display -->
+            <div class="calendar-container">
+                <div class="calendar-header-days">
+                    <div>রবি</div>
+                    <div>সোম</div>
+                    <div>মঙ্গল</div>
+                    <div>বুধ</div>
+                    <div>বৃহঃ</div>
+                    <div>শুক্র</div>
+                    <div>শনি</div>
+                </div>
+                <div class="calendar-grid" id="attendanceCalendar">
+                    <!-- Calendar days will be loaded here -->
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Private Section (Only MN can access) -->
+    <!-- Private Section -->
     <section id="private" class="private-section" style="display: none;">
         <div class="private-container">
             <div class="private-header">
@@ -108,10 +144,34 @@
                 <button onclick="checkPrivateAccess()" class="btn-primary">প্রবেশ করুন</button>
             </div>
 
-            <!-- Private Attendance Management (Hidden by default) -->
-            <div id="privateAttendance" style="display: none;">
-                <!-- Add Student Form -->
-                <div class="add-student-form">
+            <!-- Private Dashboard -->
+            <div id="privateDashboard" style="display: none;">
+                <!-- Class Upload Toggle -->
+                <div class="dashboard-menu">
+                    <button onclick="showClassUpload()" class="btn-primary">📤 ক্লাস আপলোড</button>
+                    <button onclick="showStudentManagement()" class="btn-primary">👥 স্টুডেন্ট ম্যানেজ</button>
+                    <button onclick="showPrivateAttendance()" class="btn-primary">📅 অ্যাটেনডেন্স</button>
+                </div>
+
+                <!-- Class Upload Section -->
+                <div id="classUploadSection" style="display: none;">
+                    <h3>নতুন ক্লাস আপলোড</h3>
+                    <div class="form-group">
+                        <input type="text" id="privateClassName" placeholder="বিষয়ের নাম">
+                        <input type="text" id="privateClassTeacher" placeholder="শিক্ষকের নাম">
+                        <input type="number" id="privateClassStudents" placeholder="স্টুডেন্ট সংখ্যা">
+                        <select id="privateClassIcon">
+                            <option value="fa-book">বাংলা</option>
+                            <option value="fa-language">ইংরেজি</option>
+                            <option value="fa-calculator">গণিত</option>
+                            <option value="fa-flask">বিজ্ঞান</option>
+                        </select>
+                        <button onclick="uploadPrivateClass()" class="btn-primary">আপলোড</button>
+                    </div>
+                </div>
+
+                <!-- Student Management Section -->
+                <div id="studentManagementSection" style="display: none;">
                     <h3>নতুন স্টুডেন্ট যোগ করুন</h3>
                     <div class="form-group">
                         <input type="text" id="studentName" placeholder="নাম">
@@ -119,17 +179,12 @@
                         <input type="text" id="studentClass" placeholder="ক্লাস">
                         <button onclick="addStudent()" class="btn-primary">যোগ করুন</button>
                     </div>
-                </div>
-
-                <!-- Student List -->
-                <div class="student-list-container">
-                    <h3>স্টুডেন্ট তালিকা</h3>
                     <div id="studentList" class="student-list"></div>
                 </div>
 
-                <!-- Private Attendance Calendar -->
-                <div class="private-attendance-section">
-                    <h3>স্টুডেন্ট অ্যাটেনডেন্স (প্রাইভেট)</h3>
+                <!-- Private Attendance Section -->
+                <div id="privateAttendanceSection" style="display: none;">
+                    <h3>স্টুডেন্ট অ্যাটেনডেন্স</h3>
                     <div class="attendance-controls">
                         <select id="privateMonthSelector">
                             <option value="0">জানুয়ারি</option>
@@ -151,7 +206,18 @@
                             <option value="2026">২০২৬</option>
                         </select>
                     </div>
-                    <div id="privateCalendar" class="private-calendar"></div>
+                    <div class="calendar-container">
+                        <div class="calendar-header-days">
+                            <div>রবি</div>
+                            <div>সোম</div>
+                            <div>মঙ্গল</div>
+                            <div>বুধ</div>
+                            <div>বৃহঃ</div>
+                            <div>শুক্র</div>
+                            <div>শনি</div>
+                        </div>
+                        <div class="calendar-grid" id="privateCalendar"></div>
+                    </div>
                 </div>
             </div>
         </div>
