@@ -1,12 +1,14 @@
-// Initialize local storage data
-let students = JSON.parse(localStorage.getItem('students')) || [];
-let routines = JSON.parse(localStorage.getItem('routines')) || [];
-let attendances = JSON.parse(localStorage.getItem('attendances')) || [];
+// Initialize data
+let students = JSON.parse(localStorage.getItem('mnAcademy_students')) || [];
+let privateAttendance = JSON.parse(localStorage.getItem('mnAcademy_privateAttendance')) || {};
+let visitors = JSON.parse(localStorage.getItem('mnAcademy_visitors')) || { total: 0, today: 0, lastVisit: null };
 
-// Display current date and time
+// Password for private section (change this to your desired password)
+const PRIVATE_PASSWORD = "mn123";
+
+// Update date and time
 function updateDateTime() {
     const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
     const banglaMonths = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
     
@@ -17,84 +19,140 @@ function updateDateTime() {
     
     let hours = now.getHours();
     const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12;
     
     document.querySelector('.date').textContent = `${day}, ${date} ${month} ${year}`;
-    document.querySelector('.time').textContent = `${hours}:${minutes} ${ampm}`;
+    document.querySelector('.time').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
 setInterval(updateDateTime, 1000);
 
-// Show different sections
-function showSection(sectionId) {
-    // Hide all sections
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
+// Visitor counter
+function updateVisitorCounter() {
+    const today = new Date().toDateString();
+    
+    if (visitors.lastVisit !== today) {
+        visitors.today = 1;
+        visitors.total += 1;
+        visitors.lastVisit = today;
+    } else {
+        visitors.today += 1;
+        visitors.total += 1;
+    }
+    
+    localStorage.setItem('mnAcademy_visitors', JSON.stringify(visitors));
+    
+    document.getElementById('totalVisitors').textContent = visitors.total;
+    document.getElementById('todayVisitors').textContent = visitors.today;
+    document.getElementById('todayVisitorCount').textContent = visitors.today;
+    document.getElementById('totalVisitorCount').textContent = visitors.total;
+}
+
+// Load subjects/classes
+function loadClasses() {
+    const subjects = [
+        { name: 'বাংলা ১ম পত্র', icon: 'fa-book', teacher: 'মনির স্যার', students: 25 },
+        { name: 'বাংলা ২য় পত্র', icon: 'fa-book-open', teacher: 'মনির স্যার', students: 25 },
+        { name: 'ইংরেজি ১ম পত্র', icon: 'fa-language', teacher: 'সালমা ম্যাম', students: 25 },
+        { name: 'ইংরেজি ২য় পত্র', icon: 'fa-language', teacher: 'সালমা ম্যাম', students: 25 },
+        { name: 'গণিত', icon: 'fa-calculator', teacher: 'কামাল স্যার', students: 25 },
+        { name: 'বিজ্ঞান', icon: 'fa-flask', teacher: 'নাসরিন ম্যাম', students: 25 },
+        { name: 'সমাজ বিজ্ঞান', icon: 'fa-users', teacher: 'রফিক স্যার', students: 25 },
+        { name: 'পদার্থ বিজ্ঞান', icon: 'fa-atom', teacher: 'জাহিদ স্যার', students: 25 },
+        { name: 'রসায়ন', icon: 'fa-vial', teacher: 'শাহীন স্যার', students: 25 },
+        { name: 'জীববিজ্ঞান', icon: 'fa-dna', teacher: 'নাজমা ম্যাম', students: 25 },
+        { name: 'উচ্চতর গণিত', icon: 'fa-square-root-alt', teacher: 'কামাল স্যার', students: 15 },
+        { name: 'তথ্য ও যোগাযোগ', icon: 'fa-laptop', teacher: 'সুমন স্যার', students: 25 }
+    ];
+    
+    const classGrid = document.getElementById('classGrid');
+    classGrid.innerHTML = subjects.map(subject => `
+        <div class="class-card" onclick="showClassDetails('${subject.name}')">
+            <i class="fas ${subject.icon}"></i>
+            <h3>${subject.name}</h3>
+            <p>শিক্ষক: ${subject.teacher}</p>
+            <p>স্টুডেন্ট: ${subject.students} জন</p>
+        </div>
+    `).join('');
+}
+
+// Show class details
+function showClassDetails(className) {
+    alert(`আপনি ${className} ক্লাস সিলেক্ট করেছেন। শীঘ্রই ক্লাস শুরু হবে।`);
+}
+
+// Navigation
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        
+        const targetId = this.getAttribute('href').substring(1);
+        
+        if (targetId === 'private') {
+            document.getElementById('private').style.display = 'block';
+            document.getElementById('private').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            document.getElementById('private').style.display = 'none';
+            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+        }
     });
+});
+
+// Private section access
+function checkPrivateAccess() {
+    const password = document.getElementById('privatePassword').value;
     
-    // Show selected section
-    document.getElementById(sectionId).classList.add('active');
-    
-    // Update navigation active state
-    document.querySelectorAll('nav a').forEach(link => {
-        link.classList.remove('active');
-    });
-    
-    event.target.classList.add('active');
-    
-    // Load data for the section
-    if (sectionId === 'dashboard') {
-        updateDashboard();
-    } else if (sectionId === 'routine') {
-        displayRoutines();
-    } else if (sectionId === 'students') {
+    if (password === PRIVATE_PASSWORD) {
+        document.getElementById('passwordProtection').style.display = 'none';
+        document.getElementById('privateAttendance').style.display = 'block';
+        loadPrivateAttendance();
         displayStudents();
-    } else if (sectionId === 'attendance') {
-        document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
-        loadAttendance();
+    } else {
+        alert('ভুল পাসওয়ার্ড!');
     }
 }
 
-// Student Management
+// Add student (private)
 function addStudent() {
     const name = document.getElementById('studentName').value;
     const roll = document.getElementById('studentRoll').value;
     const studentClass = document.getElementById('studentClass').value;
-    const phone = document.getElementById('studentPhone').value;
     
     if (name && roll && studentClass) {
         const student = {
             id: Date.now(),
             name: name,
             roll: roll,
-            class: studentClass,
-            phone: phone || 'নাই'
+            class: studentClass
         };
         
         students.push(student);
-        localStorage.setItem('students', JSON.stringify(students));
+        localStorage.setItem('mnAcademy_students', JSON.stringify(students));
         
-        // Clear form
         document.getElementById('studentName').value = '';
         document.getElementById('studentRoll').value = '';
         document.getElementById('studentClass').value = '';
-        document.getElementById('studentPhone').value = '';
         
         displayStudents();
-        updateDashboard();
+        loadPrivateAttendance();
         alert('স্টুডেন্ট যোগ করা হয়েছে!');
     } else {
-        alert('নাম, রোল এবং ক্লাস অবশ্যই দিতে হবে!');
+        alert('সব তথ্য দিন!');
     }
 }
 
+// Display students
 function displayStudents() {
     const studentList = document.getElementById('studentList');
     
     if (students.length === 0) {
-        studentList.innerHTML = '<p style="text-align: center; color: #666;">কোন স্টুডেন্ট নেই</p>';
+        studentList.innerHTML = '<p style="text-align: center;">কোন স্টুডেন্ট নেই</p>';
         return;
     }
     
@@ -102,218 +160,173 @@ function displayStudents() {
         <div class="student-item">
             <div class="student-info">
                 <h4>${student.name}</h4>
-                <p>রোল: ${student.roll} | ক্লাস: ${student.class} | ফোন: ${student.phone}</p>
+                <p>রোল: ${student.roll} | ক্লাস: ${student.class}</p>
             </div>
             <button onclick="deleteStudent(${student.id})" class="delete-btn">ডিলিট</button>
         </div>
     `).join('');
 }
 
+// Delete student
 function deleteStudent(id) {
-    if (confirm('নিশ্চিতভাবে ডিলিট করতে চান?')) {
-        students = students.filter(student => student.id !== id);
-        localStorage.setItem('students', JSON.stringify(students));
+    if (confirm('স্টুডেন্ট ডিলিট করবেন?')) {
+        students = students.filter(s => s.id !== id);
+        localStorage.setItem('mnAcademy_students', JSON.stringify(students));
         displayStudents();
-        updateDashboard();
+        loadPrivateAttendance();
     }
 }
 
-// Routine Management
-function addRoutine() {
-    const time = document.getElementById('routineTime').value;
-    const activity = document.getElementById('routineActivity').value;
-    const day = document.getElementById('routineDay').value;
+// Load private attendance
+function loadPrivateAttendance() {
+    const month = document.getElementById('privateMonthSelector').value;
+    const year = document.getElementById('privateYearSelector').value;
+    const calendar = document.getElementById('privateCalendar');
     
-    if (time && activity) {
-        const routine = {
-            id: Date.now(),
-            time: time,
-            activity: activity,
-            day: day
-        };
-        
-        routines.push(routine);
-        localStorage.setItem('routines', JSON.stringify(routines));
-        
-        // Clear form
-        document.getElementById('routineTime').value = '';
-        document.getElementById('routineActivity').value = '';
-        
-        displayRoutines();
-        alert('রুটিন যোগ করা হয়েছে!');
-    } else {
-        alert('সময় এবং কাজের বিবরণ দিন!');
-    }
-}
-
-function displayRoutines() {
-    const routineList = document.getElementById('routineList');
+    const daysInMonth = new Date(year, parseInt(month) + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
     
-    if (routines.length === 0) {
-        routineList.innerHTML = '<p style="text-align: center; color: #666;">কোন রুটিন নেই</p>';
-        return;
-    }
-    
-    // Sort routines by time
-    const sortedRoutines = [...routines].sort((a, b) => a.time.localeCompare(b.time));
-    
-    const dayNames = {
-        'sunday': 'রবিবার',
-        'monday': 'সোমবার',
-        'tuesday': 'মঙ্গলবার',
-        'wednesday': 'বুধবার',
-        'thursday': 'বৃহস্পতিবার',
-        'friday': 'শুক্রবার',
-        'saturday': 'শনিবার'
-    };
-    
-    routineList.innerHTML = sortedRoutines.map(routine => `
-        <div class="routine-item">
-            <span class="routine-time">${routine.time}</span>
-            <span class="routine-activity">${routine.activity}</span>
-            <span class="routine-day">${dayNames[routine.day]}</span>
-            <button onclick="deleteRoutine(${routine.id})" class="delete-btn">ডিলিট</button>
-        </div>
-    `).join('');
-}
-
-function deleteRoutine(id) {
-    if (confirm('নিশ্চিতভাবে ডিলিট করতে চান?')) {
-        routines = routines.filter(routine => routine.id !== id);
-        localStorage.setItem('routines', JSON.stringify(routines));
-        displayRoutines();
-    }
-}
-
-// Attendance Management
-function loadAttendance() {
-    const date = document.getElementById('attendanceDate').value;
-    const attendanceList = document.getElementById('attendanceList');
-    
-    if (students.length === 0) {
-        attendanceList.innerHTML = '<p style="text-align: center; color: #666;">প্রথমে স্টুডেন্ট যোগ করুন</p>';
-        return;
-    }
-    
-    // Find existing attendance for this date
-    const existingAttendance = attendances.find(a => a.date === date);
-    
-    attendanceList.innerHTML = students.map(student => {
-        const status = existingAttendance ? 
-            (existingAttendance.records[student.id] || 'absent') : 'absent';
-        
-        return `
-            <div class="attendance-item">
-                <span>${student.name} (রোল: ${student.roll})</span>
-                <div class="attendance-status">
-                    <select onchange="updateAttendanceStatus(${student.id}, this.value)" data-student-id="${student.id}">
-                        <option value="present" ${status === 'present' ? 'selected' : ''}>উপস্থিত</option>
-                        <option value="absent" ${status === 'absent' ? 'selected' : ''}>অনুপস্থিত</option>
-                    </select>
-                </div>
-                <span class="${status === 'present' ? 'present' : 'absent'}">
-                    ${status === 'present' ? '✅' : '❌'}
-                </span>
-            </div>
-        `;
-    }).join('');
-}
-
-function updateAttendanceStatus(studentId, status) {
-    // Store in a temporary object
-    if (!window.currentAttendance) {
-        window.currentAttendance = {};
-    }
-    window.currentAttendance[studentId] = status;
-}
-
-function saveAttendance() {
-    const date = document.getElementById('attendanceDate').value;
-    
-    if (!date) {
-        alert('তারিখ নির্বাচন করুন!');
-        return;
-    }
-    
-    const records = {};
-    document.querySelectorAll('.attendance-item select').forEach(select => {
-        const studentId = select.getAttribute('data-student-id');
-        records[studentId] = select.value;
+    let calendarHTML = '<div class="calendar-header">';
+    const days = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহ', 'শুক্র', 'শনি'];
+    days.forEach(day => {
+        calendarHTML += `<div class="calendar-day-name">${day}</div>`;
     });
+    calendarHTML += '</div>';
     
-    // Remove existing attendance for this date if any
-    attendances = attendances.filter(a => a.date !== date);
-    
-    // Add new attendance
-    attendances.push({
-        date: date,
-        records: records
-    });
-    
-    localStorage.setItem('attendances', JSON.stringify(attendances));
-    updateDashboard();
-    alert('অ্যাটেনডেন্স সেভ করা হয়েছে!');
-}
-
-// Dashboard
-function updateDashboard() {
-    // Total students
-    document.getElementById('totalStudents').textContent = students.length;
-    
-    // Today's attendance
-    const today = new Date().toISOString().split('T')[0];
-    const todayAttendance = attendances.find(a => a.date === today);
-    
-    let present = 0;
-    let absent = 0;
-    
-    if (todayAttendance && students.length > 0) {
-        students.forEach(student => {
-            if (todayAttendance.records[student.id] === 'present') {
-                present++;
+    let dayCount = 1;
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            } else if (dayCount <= daysInMonth) {
+                const date = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(dayCount).padStart(2, '0')}`;
+                
+                // Count attendance for this date
+                let presentCount = 0;
+                if (privateAttendance[date]) {
+                    presentCount = Object.values(privateAttendance[date]).filter(v => v === true).length;
+                }
+                
+                calendarHTML += `
+                    <div class="calendar-day" onclick="toggleDateAttendance('${date}', ${dayCount})">
+                        <span class="day-number">${dayCount}</span>
+                        ${presentCount > 0 ? `<span class="attendance-count">${presentCount}/${students.length}</span>` : ''}
+                    </div>
+                `;
+                dayCount++;
             } else {
-                absent++;
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+        }
+    }
+    
+    calendar.innerHTML = calendarHTML;
+}
+
+// Toggle date attendance
+function toggleDateAttendance(date, day) {
+    const student = prompt(`দিন ${day} তারিখের জন্য স্টুডেন্ট আইডি দিন:`);
+    
+    if (student) {
+        const studentId = parseInt(student);
+        const studentExists = students.find(s => s.id === studentId);
+        
+        if (studentExists) {
+            if (!privateAttendance[date]) {
+                privateAttendance[date] = {};
+            }
+            
+            privateAttendance[date][studentId] = !privateAttendance[date][studentId];
+            localStorage.setItem('mnAcademy_privateAttendance', JSON.stringify(privateAttendance));
+            loadPrivateAttendance();
+        } else {
+            alert('স্টুডেন্ট পাওয়া যায়নি!');
+        }
+    }
+}
+
+// Public attendance calendar
+function loadPublicAttendance() {
+    const month = document.getElementById('monthSelector').value;
+    const year = document.getElementById('yearSelector').value;
+    const calendar = document.getElementById('attendanceCalendar');
+    
+    const daysInMonth = new Date(year, parseInt(month) + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    let calendarHTML = '<div class="calendar-header">';
+    const days = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহ', 'শুক্র', 'শনি'];
+    days.forEach(day => {
+        calendarHTML += `<div class="calendar-day-name">${day}</div>`;
+    });
+    calendarHTML += '</div>';
+    
+    let dayCount = 1;
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            } else if (dayCount <= daysInMonth) {
+                const date = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(dayCount).padStart(2, '0')}`;
+                
+                // Check if anyone was present on this date
+                let hasAttendance = false;
+                if (privateAttendance[date]) {
+                    hasAttendance = Object.values(privateAttendance[date]).some(v => v === true);
+                }
+                
+                calendarHTML += `
+                    <div class="calendar-day ${hasAttendance ? 'present' : ''}" onclick="showDateAttendance('${date}')">
+                        <span class="day-number">${dayCount}</span>
+                    </div>
+                `;
+                dayCount++;
+            } else {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+        }
+    }
+    
+    calendar.innerHTML = calendarHTML;
+}
+
+// Show date attendance (public)
+function showDateAttendance(date) {
+    if (privateAttendance[date]) {
+        const presentStudents = [];
+        const absentStudents = [];
+        
+        students.forEach(student => {
+            if (privateAttendance[date][student.id]) {
+                presentStudents.push(student.name);
+            } else {
+                absentStudents.push(student.name);
             }
         });
-    }
-    
-    document.getElementById('todayPresent').textContent = present;
-    document.getElementById('todayAbsent').textContent = absent;
-    
-    // Attendance rate
-    const rate = students.length > 0 ? Math.round((present / students.length) * 100) : 0;
-    document.getElementById('attendanceRate').textContent = rate + '%';
-    
-    // Today's routine
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const todayDay = days[new Date().getDay()];
-    
-    const todayRoutines = routines
-        .filter(r => r.day === todayDay)
-        .sort((a, b) => a.time.localeCompare(b.time))
-        .slice(0, 5);
-    
-    const routineList = document.getElementById('todayRoutine');
-    
-    if (todayRoutines.length === 0) {
-        routineList.innerHTML = '<p style="text-align: center; color: #666;">আজকের জন্য কোন রুটিন নেই</p>';
+        
+        alert(`📅 তারিখ: ${date}\n\n✅ উপস্থিত (${presentStudents.length}): ${presentStudents.join(', ')}\n\n❌ অনুপস্থিত (${absentStudents.length}): ${absentStudents.join(', ')}`);
     } else {
-        routineList.innerHTML = todayRoutines.map(routine => `
-            <div class="routine-item">
-                <span class="routine-time">${routine.time}</span>
-                <span class="routine-activity">${routine.activity}</span>
-            </div>
-        `).join('');
+        alert('এই দিনে কোন অ্যাটেনডেন্স নেই!');
     }
 }
 
-// Initialize on page load
+// Event listeners for month/year changes
+document.getElementById('monthSelector').addEventListener('change', loadPublicAttendance);
+document.getElementById('yearSelector').addEventListener('change', loadPublicAttendance);
+document.getElementById('privateMonthSelector').addEventListener('change', loadPrivateAttendance);
+document.getElementById('privateYearSelector').addEventListener('change', loadPrivateAttendance);
+
+// Initialize
 window.onload = function() {
     updateDateTime();
-    updateDashboard();
-    displayRoutines();
-    displayStudents();
+    updateVisitorCounter();
+    loadClasses();
+    loadPublicAttendance();
     
-    // Set today's date for attendance
-    document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
+    // Set default month and year
+    const today = new Date();
+    document.getElementById('monthSelector').value = today.getMonth();
+    document.getElementById('yearSelector').value = today.getFullYear();
+    document.getElementById('privateMonthSelector').value = today.getMonth();
+    document.getElementById('privateYearSelector').value = today.getFullYear();
 };
