@@ -3,142 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম</title>
+    <title>MN Academy - শিক্ষার আলোয় আলোকিত</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <div class="header-content">
-                <div class="logo">
-                    <h1>📚 স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম</h1>
-                    <p>আপনার দৈনন্দিন শিক্ষা কার্যক্রম পরিচালনা করুন</p>
-                </div>
-                <div class="date-time" id="currentDateTime">
-                    <div class="date"></div>
-                    <div class="time"></div>
-                </div>
+    <!-- Header Section -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>MN <span>Academy</span></h1>
+                <p>শিক্ষার আলোয় আলোকিত</p>
             </div>
-        </header>
-
-        <!-- Navigation -->
-        <nav>
-            <ul>
-                <li><a href="#" class="active" onclick="showSection('dashboard')">ড্যাশবোর্ড</a></li>
-                <li><a href="#" onclick="showSection('routine')">ডেইলি রুটিন</a></li>
-                <li><a href="#" onclick="showSection('students')">স্টুডেন্ট প্রোফাইল</a></li>
-                <li><a href="#" onclick="showSection('attendance')">অ্যাটেনডেন্স</a></li>
-            </ul>
+            <div class="nav-links">
+                <a href="#home" class="active">হোম</a>
+                <a href="#classes">ক্লাসসমূহ</a>
+                <a href="#attendance">অ্যাটেনডেন্স</a>
+                <a href="#visitors">ভিজিটর</a>
+                <a href="#private" class="private-link">🔒 প্রাইভেট</a>
+            </div>
+            <div class="date-time" id="currentDateTime">
+                <div class="date"></div>
+                <div class="time"></div>
+            </div>
         </nav>
+    </header>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard" class="section active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalStudents">০</div>
-                    <div class="stat-label">মোট স্টুডেন্ট</div>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h2>স্বাগতম MN Academy তে</h2>
+            <p>এসএসসি পরীক্ষার্থীদের জন্য অনলাইন ক্লাস ও অ্যাটেনডেন্স সিস্টেম</p>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalVisitors">0</span>
+                    <span class="stat-label">মোট ভিজিটর</span>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="todayPresent">০</div>
-                    <div class="stat-label">আজ উপস্থিত</div>
+                <div class="stat-item">
+                    <span class="stat-number" id="todayVisitors">0</span>
+                    <span class="stat-label">আজকের ভিজিটর</span>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="todayAbsent">০</div>
-                    <div class="stat-label">আজ অনুপস্থিত</div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalStudents">0</span>
+                    <span class="stat-label">মোট স্টুডেন্ট</span>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="attendanceRate">০%</div>
-                    <div class="stat-label">উপস্থিতির হার</div>
-                </div>
-            </div>
-
-            <!-- Today's Routine Preview -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>আজকের রুটিন</h2>
-                </div>
-                <div class="routine-list" id="todayRoutine">
-                    <!-- Dynamic routine will appear here -->
+                <div class="stat-item">
+                    <span class="stat-number" id="totalClasses">6</span>
+                    <span class="stat-label">মোট বিষয়</span>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Daily Routine Section -->
-        <div id="routine" class="section">
-            <div class="card">
-                <div class="card-header">
-                    <h2>ডেইলি রুটিন ম্যানেজমেন্ট</h2>
-                </div>
-                
-                <!-- Add Routine Form -->
-                <div class="form-group">
-                    <input type="time" id="routineTime" class="form-input" placeholder="সময়">
-                    <input type="text" id="routineActivity" class="form-input" placeholder="কাজের বিবরণ">
-                    <select id="routineDay" class="form-input">
-                        <option value="sunday">রবিবার</option>
-                        <option value="monday">সোমবার</option>
-                        <option value="tuesday">মঙ্গলবার</option>
-                        <option value="wednesday">বুধবার</option>
-                        <option value="thursday">বৃহস্পতিবার</option>
-                        <option value="friday">শুক্রবার</option>
-                        <option value="saturday">শনিবার</option>
-                    </select>
-                    <button onclick="addRoutine()" class="btn">রুটিন যোগ করুন</button>
-                </div>
+    <!-- Classes Section -->
+    <section id="classes" class="classes">
+        <h2 class="section-title">আমাদের ক্লাসসমূহ</h2>
+        <div class="class-grid" id="classGrid">
+            <!-- Subjects will be loaded here -->
+        </div>
+    </section>
 
-                <!-- Routine List -->
-                <div class="routine-full-list" id="routineList">
-                    <!-- Dynamic routine list will appear here -->
-                </div>
+    <!-- Attendance Section (Public) -->
+    <section id="attendance" class="attendance">
+        <h2 class="section-title">স্টুডেন্ট অ্যাটেনডেন্স</h2>
+        <div class="attendance-container">
+            <div class="attendance-header">
+                <select id="monthSelector" class="month-selector">
+                    <option value="0">জানুয়ারি</option>
+                    <option value="1">ফেব্রুয়ারি</option>
+                    <option value="2">মার্চ</option>
+                    <option value="3">এপ্রিল</option>
+                    <option value="4">মে</option>
+                    <option value="5">জুন</option>
+                    <option value="6">জুলাই</option>
+                    <option value="7">আগস্ট</option>
+                    <option value="8">সেপ্টেম্বর</option>
+                    <option value="9">অক্টোবর</option>
+                    <option value="10">নভেম্বর</option>
+                    <option value="11">ডিসেম্বর</option>
+                </select>
+                <select id="yearSelector" class="year-selector">
+                    <option value="2024">২০২৪</option>
+                    <option value="2025">২০২৫</option>
+                    <option value="2026">২০২৬</option>
+                </select>
+            </div>
+            <div class="calendar" id="attendanceCalendar">
+                <!-- Calendar will be loaded here -->
             </div>
         </div>
+    </section>
 
-        <!-- Student Profile Section -->
-        <div id="students" class="section">
-            <div class="card">
-                <div class="card-header">
-                    <h2>স্টুডেন্ট প্রোফাইল ম্যানেজমেন্ট</h2>
-                </div>
+    <!-- Private Section (Only MN can access) -->
+    <section id="private" class="private-section" style="display: none;">
+        <div class="private-container">
+            <div class="private-header">
+                <h2>🔒 প্রাইভেট অ্যাটেনডেন্স খাতা</h2>
+                <p>(শুধুমাত্র MN একাডেমির জন্য)</p>
+            </div>
+            
+            <!-- Password Protection -->
+            <div class="password-protection" id="passwordProtection">
+                <input type="password" id="privatePassword" placeholder="পাসওয়ার্ড দিন">
+                <button onclick="checkPrivateAccess()" class="btn-primary">প্রবেশ করুন</button>
+            </div>
 
+            <!-- Private Attendance Management (Hidden by default) -->
+            <div id="privateAttendance" style="display: none;">
                 <!-- Add Student Form -->
-                <div class="form-group">
-                    <input type="text" id="studentName" class="form-input" placeholder="নাম">
-                    <input type="text" id="studentRoll" class="form-input" placeholder="রোল নম্বর">
-                    <input type="text" id="studentClass" class="form-input" placeholder="ক্লাস">
-                    <input type="text" id="studentPhone" class="form-input" placeholder="ফোন নম্বর">
-                    <button onclick="addStudent()" class="btn">স্টুডেন্ট যোগ করুন</button>
+                <div class="add-student-form">
+                    <h3>নতুন স্টুডেন্ট যোগ করুন</h3>
+                    <div class="form-group">
+                        <input type="text" id="studentName" placeholder="নাম">
+                        <input type="text" id="studentRoll" placeholder="রোল নম্বর">
+                        <input type="text" id="studentClass" placeholder="ক্লাস">
+                        <button onclick="addStudent()" class="btn-primary">যোগ করুন</button>
+                    </div>
                 </div>
 
                 <!-- Student List -->
-                <div class="student-list" id="studentList">
-                    <!-- Dynamic student list will appear here -->
+                <div class="student-list-container">
+                    <h3>স্টুডেন্ট তালিকা</h3>
+                    <div id="studentList" class="student-list"></div>
+                </div>
+
+                <!-- Private Attendance Calendar -->
+                <div class="private-attendance-section">
+                    <h3>স্টুডেন্ট অ্যাটেনডেন্স (প্রাইভেট)</h3>
+                    <div class="attendance-controls">
+                        <select id="privateMonthSelector">
+                            <option value="0">জানুয়ারি</option>
+                            <option value="1">ফেব্রুয়ারি</option>
+                            <option value="2">মার্চ</option>
+                            <option value="3">এপ্রিল</option>
+                            <option value="4">মে</option>
+                            <option value="5">জুন</option>
+                            <option value="6">জুলাই</option>
+                            <option value="7">আগস্ট</option>
+                            <option value="8">সেপ্টেম্বর</option>
+                            <option value="9">অক্টোবর</option>
+                            <option value="10">নভেম্বর</option>
+                            <option value="11">ডিসেম্বর</option>
+                        </select>
+                        <select id="privateYearSelector">
+                            <option value="2024">২০২৪</option>
+                            <option value="2025">২০২৫</option>
+                            <option value="2026">২০২৬</option>
+                        </select>
+                    </div>
+                    <div id="privateCalendar" class="private-calendar"></div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Attendance Section -->
-        <div id="attendance" class="section">
-            <div class="card">
-                <div class="card-header">
-                    <h2>অ্যাটেনডেন্স ম্যানেজমেন্ট</h2>
-                </div>
-
-                <!-- Date Selector -->
-                <div class="form-group">
-                    <input type="date" id="attendanceDate" class="form-input">
-                    <button onclick="loadAttendance()" class="btn">লোড করুন</button>
-                </div>
-
-                <!-- Attendance List -->
-                <div class="attendance-list" id="attendanceList">
-                    <!-- Dynamic attendance list will appear here -->
-                </div>
-
-                <button onclick="saveAttendance()" class="btn" style="margin-top: 20px;">অ্যাটেনডেন্স সেভ করুন</button>
-            </div>
+    <!-- Visitor Counter -->
+    <div class="visitor-counter" id="visitors">
+        <div class="counter-container">
+            <i class="fas fa-eye"></i>
+            <span>আজকের ভিজিটর: <strong id="todayVisitorCount">0</strong></span>
+            <span>মোট ভিজিটর: <strong id="totalVisitorCount">0</strong></span>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; ২০২৬ MN Academy - সমস্ত অধিকার সংরক্ষিত</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
